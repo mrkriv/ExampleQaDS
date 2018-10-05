@@ -9,6 +9,10 @@ Example project for [Quest and Dialog System plugin](https://github.com/mrkriv/Q
  - git submodule init
  - git submodule update
  
+ or
+ 
+ - git clone https://github.com/mrkriv/ExampleQaDS.git --recurse-submodules
+ 
 ---
  
 ![In game](https://raw.githubusercontent.com/mrkriv/QaDS/master/docs/images/DialogExample.png)
