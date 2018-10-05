@@ -1,2 +1,3 @@
-[submodule "Plugins/DialogPlugin"]
-	url = https://github.com/mrkriv/QaDS.git
+[submodule "DialogPlugin"]
+	path = Plugins/DialogPlugin
+	url = git://github.com/mrkriv/QaDS.git
