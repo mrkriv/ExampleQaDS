@@ -1,8 +1,9 @@
 #### Example Quest and Dialog System
 Example project for [Quest and Dialog System plugin](https://github.com/mrkriv/QaDS)
 
+[Download Windows binary](https://github.com/mrkriv/ExampleQaDS/releases/download/1.0/VRShooter-master.zip)
 
-#### Install
+#### Install project
 
  - git clone https://github.com/mrkriv/ExampleQaDS.git
  - cd .\ExampleQaDS\
