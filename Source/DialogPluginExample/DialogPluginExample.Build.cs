@@ -1,5 +1,3 @@
-
-
 using UnrealBuildTool;
 
 public class DialogPluginExample : ModuleRules
@@ -7,8 +5,9 @@ public class DialogPluginExample : ModuleRules
 	public DialogPluginExample(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { 
+        OptimizeCode = CodeOptimization.Never;
+
+        PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
@@ -21,7 +20,9 @@ public class DialogPluginExample : ModuleRules
 			"RenderCore",
 			"ShaderCore",
 
-			"NavigationSystem"
-		});
+            "AIModule",
+            "NavigationSystem",
+            "DialogSystemRuntime",
+        });
 	}
 }
