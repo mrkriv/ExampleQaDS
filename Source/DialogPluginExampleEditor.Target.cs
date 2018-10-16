@@ -1,5 +1,3 @@
-
-
 using UnrealBuildTool;
 using System.Collections.Generic;
 

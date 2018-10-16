@@ -27,13 +27,13 @@ FString USaveFunctionLibrary::GetFullPathToSave(const FString& saveName)
 	return FPaths::ProjectSavedDir() / saveName + SaveFileExt;
 }
 
-bool USaveFunctionLibrary::Save(const UObject* WorldContextObject, const FString& saveName)
+bool USaveFunctionLibrary::SaveGame(UObject* WorldContextObject, const FString& saveName)
 {
 	auto world = WorldContextObject->GetWorld();
 	FSaveArchive save;
 	save.Version = 01'00'00;
-	save.Quest = UQuestProcessor::GetQuestProcessor()->SaveToBinary();
-	save.StoryKeys = UStoryKeyManager::GetStoryKeyManager()->SaveToBinary();
+	save.Quest = UQuestProcessor::GetQuestProcessor(WorldContextObject)->SaveToBinary();
+	save.StoryKeys = UStoryKeyManager::GetStoryKeyManager(WorldContextObject)->SaveToBinary();
 
 	for (auto level : world->GetLevels())
 	{
@@ -152,7 +152,7 @@ void USaveFunctionLibrary::SaveActor(FSaveArchive& save, AActor* actor)
 	UE_LOG(GameLog, Log, TEXT("Save actor %s"), *actor->GetName());
 }
 
-bool USaveFunctionLibrary::Load(const UObject* WorldContextObject, const FString& saveName)
+bool USaveFunctionLibrary::LoadGame(UObject* WorldContextObject, const FString& saveName)
 {
 	auto fullPath = GetFullPathToSave(saveName);
 	TArray<uint8> data;
@@ -180,8 +180,8 @@ bool USaveFunctionLibrary::Load(const UObject* WorldContextObject, const FString
 		LoadActor(actArh, world);
 	}
 
-	UStoryKeyManager::GetStoryKeyManager()->LoadFromBinary(save.StoryKeys);
-	UQuestProcessor::GetQuestProcessor()->LoadFromBinary(save.Quest);
+	UStoryKeyManager::GetStoryKeyManager(WorldContextObject)->LoadFromBinary(save.StoryKeys);
+	UQuestProcessor::GetQuestProcessor(WorldContextObject)->LoadFromBinary(save.Quest);
 		
 	return true;
 }
@@ -229,7 +229,6 @@ AActor* USaveFunctionLibrary::LoadActor(const FSaveActorArchive& actArh, UWorld*
 				//auto buff = FMemoryReader(pawnArchive.SkeletalMeshDump, true);
 				//auto wr = FObjectAndNameAsStringProxyArchive(buff, false);
 				//skmComponent->Serialize(wr);
-
 			//	skmComponent->InitializeAnimScriptInstance(true);
 			}
 			else if (auto movComponent = Cast<UMovementComponent>(comp))
@@ -307,9 +306,10 @@ FArchive& operator<<(FArchive& Ar, FSaveActorArchive& A)
 
 FArchive& operator<<(FArchive& Ar, FSaveComponentArchive& A)
 {
-	return Ar 
-		<< A.Name
-		<< A.Data;
+	Ar << A.Name;
+	Ar << A.Data;
+
+	return Ar;
 }
 
 FArchive& operator<<(FArchive& Ar, FSavePawnArchive& A)
@@ -325,9 +325,10 @@ FArchive& operator<<(FArchive& Ar, FSavePawnArchive& A)
 
 FArchive& operator<<(FArchive& Ar, FSaveArchive& A)
 {
-	return Ar 
-		<< A.Version
-		<< A.Actors
-		<< A.Quest
-		<< A.StoryKeys;
+	Ar << A.Version;
+	Ar << A.Actors;
+	Ar << A.Quest;
+	Ar << A.StoryKeys;
+
+	return Ar;
 }

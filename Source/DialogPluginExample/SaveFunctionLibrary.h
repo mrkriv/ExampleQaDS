@@ -122,10 +122,10 @@ class DIALOGPLUGINEXAMPLE_API USaveFunctionLibrary : public UBlueprintFunctionLi
 	static AActor* LoadActor(const FSaveActorArchive& actArh, UWorld* world);
 public:
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
-	static bool Save(const UObject* WorldContextObject, const FString& saveName);
+	static bool SaveGame(UObject* WorldContextObject, const FString& saveName);
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
-	static bool Load(const UObject* WorldContextObject, const FString& saveName);
+	static bool LoadGame(UObject* WorldContextObject, const FString& saveName);
 
 	UFUNCTION(BlueprintPure)
 	static TArray<FSaveDescriptor> GetSaveDescriptors();
