@@ -42,14 +42,15 @@ public:
 	FInventoryChangeItemSignature OnRemoveItem;
 
 	UInventoryComponent();
-
-	FItemSlot* GetSlotByLocation(const FVector2D& Location);
 	
 	UFUNCTION(BlueprintCallable)
 	FItemSlot RemoveByLocation(const FVector2D& Location, int Count = -1);
 
 	UFUNCTION(BlueprintCallable)
 	bool Move(const FVector2D& LocationDist, const FVector2D& LocationSource, int Count);
+
+	UFUNCTION(BlueprintCallable)
+	bool Move(const FVector2D& LocationDist, const FVector2D& LocationSource, int Count, UInventoryComponent* DistInventory);
 
 	UFUNCTION(BlueprintCallable)
 	void Add(const FItem& Prototype, int Count = 1);
@@ -61,8 +62,18 @@ public:
 	bool CheckCount(const FItem& Prototype, int Count = 1);
 
 	UFUNCTION(BlueprintPure)
-	TArray<FItemSlot> GetItems() { return Slots; }
+	TArray<FItemSlot> GetItems() const;
+
+	UFUNCTION(BlueprintPure)
+	float GetWeight() const;
+
+	UFUNCTION(BlueprintPure)
+	float GetCost() const;
 
 protected:
 	virtual void BeginPlay() override;	
+
+private:
+	FItemSlot* GetSlotByLocation(const FVector2D& Location);
+	TArray<FItemSlot*> GetSlotsByLocation(const FVector2D& Location, const FVector2D& Size);
 };

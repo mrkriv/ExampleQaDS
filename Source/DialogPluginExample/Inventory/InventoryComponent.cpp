@@ -26,6 +26,23 @@ FItemSlot* UInventoryComponent::GetSlotByLocation(const FVector2D& Location)
 	return NULL;
 }
 
+TArray<FItemSlot*> UInventoryComponent::GetSlotsByLocation(const FVector2D& Location, const FVector2D& Size)
+{
+	TArray<FItemSlot*> result;
+
+	for (auto& slot : Slots)
+	{
+		auto rect = FBox2D(slot.Location, slot.Location + slot.Item.Size);
+
+		if ((Location.X >= rect.Min.X) && (Location.X <= rect.Max.X) && (Location.Y >= rect.Min.Y) && (Location.Y <= rect.Max.Y))
+		{
+			result.Add(&slot);
+		}
+	}
+
+	return result;
+}
+
 FItemSlot UInventoryComponent::RemoveByLocation(const FVector2D& Location, int Count)
 {
 	if (Count <= 0)
@@ -100,6 +117,11 @@ void UInventoryComponent::Add(const FItem& Prototype, int Count)
 
 bool UInventoryComponent::Move(const FVector2D& LocationDist, const FVector2D& LocationSource, int Count)
 {
+	return Move(LocationDist, LocationSource, Count, this);
+}
+
+bool UInventoryComponent::Move(const FVector2D& LocationDist, const FVector2D& LocationSource, int Count, UInventoryComponent* DistInventory)
+{
 	if (Count <= 0)
 		return false;
 
@@ -107,13 +129,16 @@ bool UInventoryComponent::Move(const FVector2D& LocationDist, const FVector2D& L
 	if (source == NULL)
 		return false;
 
-	auto dist = GetSlotByLocation(LocationDist);
+	auto dist = DistInventory->GetSlotByLocation(LocationDist);
 	if (dist != NULL)
 		dist->Location = LocationSource;
 
 	source->Location = LocationDist;
 
 	OnChange.Broadcast(this);
+	if (DistInventory != this)
+		DistInventory->OnChange.Broadcast(DistInventory);
+
 	return true;
 }
 
@@ -174,4 +199,33 @@ bool UInventoryComponent::CheckCount(const FItem& Prototype, int Count)
 	}
 
 	return false;
+}
+
+TArray<FItemSlot> UInventoryComponent::GetItems() const
+{ 
+	return Slots; 
+}
+
+float UInventoryComponent::GetWeight() const
+{
+	auto result = 0.f;
+
+	for (auto& slot : Slots)
+	{
+		result += slot.Item.Weight;
+	}
+
+	return result;
+}
+
+float UInventoryComponent::GetCost() const
+{
+	auto result = 0.f;
+
+	for (auto& slot : Slots)
+	{
+		result += slot.Item.Cost;
+	}
+
+	return result;
 }
