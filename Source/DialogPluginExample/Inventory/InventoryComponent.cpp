@@ -17,7 +17,7 @@ FItemSlot* UInventoryComponent::GetSlotByLocation(const FVector2D& Location)
 	{
 		auto rect = FBox2D(slot.Location, slot.Location + slot.Item.Size);
 
-		if (rect.IsInside(Location))
+		if ((Location.X >= rect.Min.X) && (Location.X <= rect.Max.X) && (Location.Y >= rect.Min.Y) && (Location.Y <= rect.Max.Y))
 		{
 			return &slot;
 		}
@@ -26,16 +26,19 @@ FItemSlot* UInventoryComponent::GetSlotByLocation(const FVector2D& Location)
 	return NULL;
 }
 
-int UInventoryComponent::RemoveByLocation(const FVector2D& Location, int Count)
+FItemSlot UInventoryComponent::RemoveByLocation(const FVector2D& Location, int Count)
 {
+	if (Count <= 0)
+		return FItemSlot();
+
 	for (auto i = 0; i < Slots.Num(); i++)
 	{
 		auto slot = Slots[i];
 		auto rect = FBox2D(slot.Location, slot.Location + slot.Item.Size);
 
-		if (rect.IsInside(Location))
+		if ((Location.X >= rect.Min.X) && (Location.X <= rect.Max.X) && (Location.Y >= rect.Min.Y) && (Location.Y <= rect.Max.Y))
 		{
-			auto memoryCount = slot.Count;
+			auto slotCopy = slot;
 			if (Count < 0)
 			{
 				slot.Count = 0;
@@ -50,22 +53,33 @@ int UInventoryComponent::RemoveByLocation(const FVector2D& Location, int Count)
 				Slots.RemoveAt(i);
 			}
 
-			return memoryCount - slot.Count;
+			slotCopy.Count -= slot.Count;
+
+			OnChange.Broadcast(this);
+			OnRemoveItem.Broadcast(this, slotCopy);
+
+			return slotCopy;
 		}
 	}
 
-	return 0;
+	return FItemSlot();
 }
 
 void UInventoryComponent::Add(const FItem& Prototype, int Count)
 {
-	FVector2D maxItemLocation;
+	if (Count <= 0)
+		return;
+
+	auto maxItemLocation = FVector2D::ZeroVector;
 
 	for (auto& slot : Slots)
 	{
 		if(slot.Item.Name == Prototype.Name)
 		{
 			slot.Count += Count;
+
+			OnChange.Broadcast(this);
+			OnAddItem.Broadcast(this, slot);
 			return;
 		}
 
@@ -78,5 +92,86 @@ void UInventoryComponent::Add(const FItem& Prototype, int Count)
 	newSlot.Count = Count;
 	newSlot.Location = maxItemLocation;
 
-	Slots.Add(newSlot);	
+	Slots.Add(newSlot);
+
+	OnChange.Broadcast(this);
+	OnAddItem.Broadcast(this, newSlot);
+}
+
+bool UInventoryComponent::Move(const FVector2D& LocationDist, const FVector2D& LocationSource, int Count)
+{
+	if (Count <= 0)
+		return false;
+
+	auto source = GetSlotByLocation(LocationSource);
+	if (source == NULL)
+		return false;
+
+	auto dist = GetSlotByLocation(LocationDist);
+	if (dist != NULL)
+		dist->Location = LocationSource;
+
+	source->Location = LocationDist;
+
+	OnChange.Broadcast(this);
+	return true;
+}
+
+void UInventoryComponent::Remove(const FItem& Prototype, int Count)
+{
+	if (Count <= 0)
+		return;
+
+	FItemSlot slotForEvent;
+	slotForEvent.Item = Prototype;
+	slotForEvent.Count = Count;
+
+	for (auto i = 0; i < Slots.Num(); i++)
+	{
+		auto slot = Slots[i];
+
+		if (slot.Item.Name == Prototype.Name)
+		{
+			auto delta = FMath::Max(slot.Count - Count, 0);
+
+			slot.Count -= delta;
+			Count -= delta;
+
+			if (slot.Count == 0)
+			{
+				Slots.RemoveAt(i--);
+			}
+
+			if (Count == 0)
+			{
+				slotForEvent.Location = slot.Location;
+				break;
+			}
+		}
+	}
+
+	slotForEvent.Count -= Count;
+
+	OnRemoveItem.Broadcast(this, slotForEvent);
+	OnChange.Broadcast(this);
+}
+
+bool UInventoryComponent::CheckCount(const FItem& Prototype, int Count)
+{
+	if (Count <= 0)
+		return true;
+
+	auto realCount = 0;
+	for (auto& slot : Slots)
+	{
+		if (slot.Item.Name == Prototype.Name)
+		{
+			Count -= slot.Count;
+
+			if (Count <= 0)
+				return true;
+		}
+	}
+
+	return false;
 }

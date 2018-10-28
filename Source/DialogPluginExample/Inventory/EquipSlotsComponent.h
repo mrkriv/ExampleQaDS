@@ -41,12 +41,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FEquipSlot> Slots;
+	
+	FEquipSlot* GetSlotByName(const FName& SlotName);
 
 	UFUNCTION(BlueprintCallable)
-	FItemSlot Unequip(UInventoryComponent* Inventory, const FName& SlotName);
+	void Unequip(UInventoryComponent* Inventory, const FName& SlotName);
 
 	UFUNCTION(BlueprintCallable)
-	FEquipSlot Equip(UInventoryComponent* Inventory, const FName& SlotName, const FVector2D& InventorySlotLocation);
+	bool Equip(UInventoryComponent* Inventory, const FName& SlotName, const FVector2D& InventorySlotLocation);
 
 protected:
 	virtual void BeginPlay() override;	

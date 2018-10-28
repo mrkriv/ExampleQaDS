@@ -10,13 +10,51 @@ void UEquipSlotsComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-
-FItemSlot UEquipSlotsComponent::Unequip(UInventoryComponent* Inventory, const FName& SlotName)
+FEquipSlot* UEquipSlotsComponent::GetSlotByName(const FName& SlotName)
 {
-	return FItemSlot();
+	for (auto& slot : Slots)
+	{
+		if (slot.SlotName == SlotName)
+			return &slot;
+	}
+
+	return NULL;
 }
 
-FEquipSlot UEquipSlotsComponent::Equip(UInventoryComponent* Inventory, const FName& SlotName, const FVector2D& InventorySlotLocation)
+void UEquipSlotsComponent::Unequip(UInventoryComponent* Inventory, const FName& SlotName)
 {
-	return FEquipSlot();
+	auto slot = GetSlotByName(SlotName);
+
+	if (slot == NULL)
+		return;
+
+	Inventory->Add(slot->Item, slot->Count);
+
+	slot->Count = 0;
+	slot->Item = FItem();
+}
+
+bool UEquipSlotsComponent::Equip(UInventoryComponent* Inventory, const FName& SlotName, const FVector2D& InventorySlotLocation)
+{
+	auto slot = GetSlotByName(SlotName);
+
+	if (slot == NULL)
+		return false;
+
+	if (slot->Item.SlotType != slot->Type)
+		return false;
+
+	if (!(slot->Item.Size <= slot->Size))
+		return false;
+
+	if (slot->Count > 0)
+	{
+		Unequip(Inventory, SlotName);
+	}
+
+	auto invSlot = Inventory->RemoveByLocation(InventorySlotLocation);	
+	slot->Item = invSlot.Item;
+	slot->Count = invSlot.Count;
+
+	return true;
 }
