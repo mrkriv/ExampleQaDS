@@ -91,12 +91,11 @@ void USaveFunctionLibrary::SaveActor(FSaveArchive& save, AActor* actor)
 	actArh.Transform = actor->GetTransform();
 	actArh.Name = actor->GetName();
 
-	auto buffAr = FMemoryWriter(actArh.Data, true);
+	FMemoryWriter buffAr(actArh.Data, true);
 	buffAr.ArIsSaveGame = true;
 
-	auto wrapper = FObjectAndNameAsStringProxyArchive(buffAr, false);
+	FObjectAndNameAsStringProxyArchive wrapper(buffAr, false);
 	actor->Serialize(wrapper);
-
 
 	if (auto character = Cast<ACharacter>(actor))
 	{
@@ -198,8 +197,9 @@ AActor* USaveFunctionLibrary::LoadActor(const FSaveActorArchive& actArh, UWorld*
 		UE_LOG(GameLog, Log, TEXT("Spawn actor %s"), *actArh.Name);
 	}
 
-	auto buffAr = FMemoryReader(actArh.Data, true);
-	auto wrapper = FObjectAndNameAsStringProxyArchive(buffAr, false);
+	FMemoryReader buffAr (actArh.Data, true);
+	FObjectAndNameAsStringProxyArchive wrapper(buffAr, false);
+	
 	actor->Serialize(wrapper);
 
 	auto character = Cast<ACharacter>(actor);

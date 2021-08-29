@@ -18,7 +18,6 @@ public class DialogPluginExample : ModuleRules
 		{ 
 			"RHI",
 			"RenderCore",
-			"ShaderCore",
 
             "AIModule",
             "NavigationSystem",

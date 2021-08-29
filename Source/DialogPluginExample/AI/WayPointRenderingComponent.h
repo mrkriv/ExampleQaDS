@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameFramework/Actor.h"
+#include "DebugRenderSceneProxy.h"
+#include "DynamicMeshBuilder.h"
 #include "PrimitiveViewRelevance.h"
 #include "Components/PrimitiveComponent.h"
-#include "DynamicMeshBuilder.h"
-#include "DebugRenderSceneProxy.h"
+#include "GameFramework/Actor.h"
+#include "UObject/ObjectMacros.h"
 #include "WayPointRenderingComponent.generated.h"
 
 class AWayPoint;
@@ -82,7 +82,7 @@ class UWayPointRenderingComponent: public UPrimitiveComponent
 	virtual FBoxSphereBounds CalcBounds(const FTransform &LocalToWorld) const override; 
 
 #if WITH_RECAST && WITH_EDITOR
-	virtual void CreateRenderState_Concurrent() override;
+	virtual void CreateRenderState_Concurrent(class FRegisterComponentContext *) override;
 	virtual void DestroyRenderState_Concurrent() override;
 
 private:

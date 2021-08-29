@@ -146,9 +146,9 @@ FBoxSphereBounds UWayPointRenderingComponent::CalcBounds(const FTransform& Local
 }
 
 #if WITH_RECAST && WITH_EDITOR
-void UWayPointRenderingComponent::CreateRenderState_Concurrent()
+void UWayPointRenderingComponent::CreateRenderState_Concurrent(FRegisterComponentContext * ctx)
 {
-	Super::CreateRenderState_Concurrent();
+	Super::CreateRenderState_Concurrent(ctx);
 	WayPointDebugDrawDelegateHelper.RegisterDebugDrawDelgate();
 }
 
