@@ -1,10 +1,7 @@
 #include "WayPointRenderingComponent.h"
 #include "WayPoint.h"
-#include "EngineGlobals.h"
-#include "Engine/Engine.h"
 #include "Engine/Canvas.h"
 #include "SceneManagement.h"
-#include "Debug/DebugDrawService.h"
 
 static const FColor NavMeshRenderColor_OpenSet(255, 128, 0, 255);
 static const FColor NavMeshRenderColor_ClosedSet(255, 196, 0, 255);

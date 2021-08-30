@@ -1,12 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameFramework/Actor.h"
-#include "PrimitiveViewRelevance.h"
-#include "Components/PrimitiveComponent.h"
-#include "DynamicMeshBuilder.h"
-#include "DebugRenderSceneProxy.h"
 #include "WayPoint.generated.h"
 
 class UWayPointRenderingComponent;

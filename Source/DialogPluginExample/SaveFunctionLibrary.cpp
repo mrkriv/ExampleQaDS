@@ -13,10 +13,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
-#include "Components/PrimitiveComponent.h"
-#include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Animation/AnimInstance.h"
 #include "BrainComponent.h"
 #include "AIController.h"
 

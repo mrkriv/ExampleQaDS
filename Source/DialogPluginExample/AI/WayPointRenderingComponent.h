@@ -5,8 +5,6 @@
 #include "DynamicMeshBuilder.h"
 #include "PrimitiveViewRelevance.h"
 #include "Components/PrimitiveComponent.h"
-#include "GameFramework/Actor.h"
-#include "UObject/ObjectMacros.h"
 #include "WayPointRenderingComponent.generated.h"
 
 class AWayPoint;
